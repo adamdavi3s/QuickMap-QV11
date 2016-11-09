@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ExtensionObject Label="Qlik Map Multi Layer" Description="Qlik Map Multi Layer" PageHeight="300000">
+  <Dimension Label="Region Dimension" Initial=""/>
+  <Dimension Label="Coordinates" Initial="" DropTarget="coordinates"/>
+   <Dimension Label="Region Dimension2" Initial=""/>
+  <Dimension Label="Coordinates2" Initial="" DropTarget="coordinates"/>
+  <Measurement Label="Measurement" Initial="" />
+  <Measurement Label="ColorExpression" Initial="" />
+  <Measurement Label="Popup Contents" Initial="" />  
+    <Measurement Label="Measurement2" Initial="" />
+  <Measurement Label="ColorExpression2" Initial="" />
+  <Measurement Label="Popup Contents2" Initial="" />
+   <Text Label="Max Line Width and Point Size" Type="text" Expression="20"/>
+  <Text Label="Default Opacity (decimal)" Type="text" Expression=".7"/>
+  <Text Label="Use Other Tile Set" Type="checkbox"/>
+  <Text Label="Tileset URL" Type="text" Expression=""/>
+  
+
+  <Initiate Name="Chart.Title" value="Qlik Map" />
+  <Initiate Name="Caption.Text" Value="Qlik Map" />
+  <Initiate Name="Chart.BgColor.ColorHex" value="#FFF" />
+  <Initiate Name="Chart.Dimension.0.Field" Value="rgn15cd" />
+  <Initiate Name="Chart.Dimension.1.Field" Value="RGCoordinates" />
+  <Initiate Name="Chart.Dimension.2.Field" Value="=1" />
+  <Initiate Name="Chart.Dimension.3.Field" Value="=1" />
+  </ExtensionObject>
+
+
+
