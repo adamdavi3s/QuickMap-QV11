@@ -222,6 +222,7 @@ function Map_Done() {
 		for (var rowIx = 0; rowIx < _this.Data.Rows.length; rowIx++) {//loop throught the data from QlikView
 			
 			var row = _this.Data.Rows[rowIx];
+			
 			//feature name
 			var thisR = row[0].text;
 			//pop up contents
@@ -692,7 +693,7 @@ if( loadLayerTwo == 1) {
 				} else if (row2[7].text != "-" && row2[7].text != " " && row2[7].text != "") {//otherwise...
 					perNum2 = parseFloat(row2[7].text);
 					hcFlag2 = 0
-				}
+				} 
 				//id
 				thisR2 = thisR2.toUpperCase();
 				//true value of the region to use for search, etc.
@@ -766,8 +767,8 @@ if( loadLayerTwo == 1) {
 								thisNew2 = createPoints2(thisC2)
 							}
 							rArr2[thisR2].cArr.push(thisNew2);
-							if (valCheck.length < 2 && $.inArray(perNum2, valCheck) > -1) {
-								valCheck.push(perNum2)
+							if (valCheck2.length < 2 && $.inArray(perNum2, valCheck2) > -1) {
+								valCheck2.push(perNum2)
 							}
 							if (perNum2 != "-" && perNum2 != " " && perNum2 != "" && hcFlag2 === 0 && perNum2 != -1) {
 								if (perNum2 > maxVal2) {
@@ -799,9 +800,9 @@ if( loadLayerTwo == 1) {
 								rPercent : tNum2,
 								rColor : colorFormatter(row2[8].text)
 							};
-							if (valCheck.length < 2 && $.inArray(perNum2, valCheck) > 1) {
-								if (!$.inArray(perNum2, valCheck)) {
-									valCheck.push(perNum2)
+							if (valCheck2.length < 2 && $.inArray(perNum2, valCheck2) > 1) {
+								if (!$.inArray(perNum2, valCheck2)) {
+									valCheck2.push(perNum2)
 								}
 							}
 							if (rArr2[thisR2].rPercent && hcFlag2 === 0) {
@@ -875,7 +876,7 @@ if( loadLayerTwo == 1) {
 			var rObj2 = this;
 			lArr2 = this.cArr;
 			
-			if (valCheck.length === 1) { //set regPercent2to the percentage
+			if (valCheck2.length === 1) { //set regPercent2to the percentage
 				var regPercent2= lineO;
 			} else if (rObj2.rPercent.indexOf("px") > -1 && rObj2.rPercent.indexOf(",") === -1) {//if line width is hardcoded but not region, set the opacity to .9
 				var regPercent2= .9
@@ -1176,7 +1177,7 @@ if( loadLayerTwo == 1) {
 		}
 		
 		//load stylesheet
-		Qva.LoadCSS("/QvAjaxZfc/QvsViewClient.aspx?public=only&name=Extensions/qlikmap/style.css");
+		Qva.LoadCSS("/QvAjaxZfc/QvsViewClient.aspx?public=only&name=Extensions/qlikmapmultilayer/style.css");
 		//add images to buttons
 		$(".olControlZoomInItemInactive").css("background", "url('" + qpath + "more.png') no-repeat top left").css("width", "19px").css("height", "19px");
 		$(".olControlZoomOutItemInactive").css("background", "url('" + qpath + "less.png') no-repeat top left").css("width", "19px").css("height", "19px").css("top", "17px");
@@ -1184,10 +1185,10 @@ if( loadLayerTwo == 1) {
 	})
 }
 
-var qpath = Qva.Remote + "?public=only&name=Extensions/qlikmap/";
+var qpath = Qva.Remote + "?public=only&name=Extensions/qlikmapmultilayer/";
 var borderWidth = 1;
 if ( typeof jQuery == "undefined") {//if running QV10, load jquery, then load the openlayers library
-	Qva.LoadScript("/QvAjaxZfc/QvsViewClient.aspx?public=only&name=Extensions/qlikmap/jquery.js", function() {
+	Qva.LoadScript("/QvAjaxZfc/QvsViewClient.aspx?public=only&name=Extensions/qlikmapmultilayer/jquery.js", function() {
 		Qva.LoadScript("http://www.openlayers.org/api/OpenLayers.js", Map_Done)
 	})
 } else {
@@ -1211,8 +1212,9 @@ var maxValS2 = 0;
 
 
 
-colorFormatter = function(c) {//function used to properly format the color that is entered
+colorFormatter = function(c) { //function used to properly format the color that is entered
 	var cc = c.toLowerCase();
+
 	if ((cc.indexOf("rgb") === -1) && (cc.indexOf("#") === -1)) {
 		if (cc.length < 6) {
 			var addIt = "#";
@@ -1225,8 +1227,19 @@ colorFormatter = function(c) {//function used to properly format the color that 
 		}
 		return cc;
 	} else {
-		return cc;
+		//need to add code here to split the argb down and pass it out 
+		if (cc.indexOf("argb") >-1) {
+			var argb = cc.replace(/[^\d,]/g, '').split(',');
+				var colourA = argb[0];
+				var colourR = argb[1];
+				var colourG = argb[2];
+				var colourB = argb[3];
+		 cc = "rgb("+colourR+","+colourG+","+colourB+")"; 
+		 return cc;
+		} else{
+		return cc; }
 	}
+	
 }
 
 
