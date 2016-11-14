@@ -103,6 +103,13 @@ function Map_Done() {
 		//checkbox for using alternate tileset.  if set, use the variable on the next line
 		window["cT" + divName] = _this.Layout.Text3.text.toString();
 		//url to alternate tileset to use instead of the default
+		
+		
+		//layertwo check
+		var loadLayerTwo = _this.Layout.Text4.text.toString();
+		
+		
+		
 
 		//Create the map
 		window[mapName] = new OpenLayers.Map(divName, {
@@ -163,7 +170,15 @@ function Map_Done() {
 		OpenLayers.Control.SelectFeature.prototype.clickFeature = function(t) {
 			_this.Data.SelectTextsInColumn(0, false, t.attributes.rName)
 		};
-
+		
+		
+		
+		
+		
+	//CREATE THE FIRST LAYER HERE	
+	
+	
+	
 		//create the layer which we'll use to display our features
 		var layerVector;
 		layerVector = new OpenLayers.Layer.Vector("Regions", {
@@ -183,6 +198,10 @@ function Map_Done() {
 		window[mapName].events.register("mousemove", layerVector, function(e) {
 			$("#hoverBox").css("top", e.clientY - 15 + "px").css("left", e.clientX + 30 + "px")
 		});
+
+		
+		
+		
 		//array of features
 		fArray = [];
 		//collection of features that we'll add to the layer
@@ -616,14 +635,14 @@ function Map_Done() {
 		
 	
 /*******************************************************************************************************/
-
+if( loadLayerTwo == 1) {
 //OK lets see if this works for adding a new layer.........
 
 //create the layer which we'll use to display our features
 		var layerVector2;
-		layerVector2 = new OpenLayers.Layer.Vector("Regions", {
+		layerVector2 = new OpenLayers.Layer.Vector("Regions2", {
 			
-			//add a listener to the features to show the popup box
+			/*add a listener to the features to show the popup box
 			eventListeners : {
 				featureselected : function(e) {
 					if (e.feature.data.rPop != "" && e.feature.data.rPop != "-" && e.feature.data.rPop != " ") {
@@ -634,7 +653,7 @@ function Map_Done() {
 				featureunselected : function(e) {
 					$("#hoverBox").hide()
 				}
-			}
+			}*/
 		});
 		window[mapName].events.register("mousemove", layerVector2, function(e) {
 			$("#hoverBox").css("top", e.clientY - 15 + "px").css("left", e.clientX + 30 + "px")
@@ -740,7 +759,7 @@ function Map_Done() {
 					} else {
 						//it's a polygon
 						if (rArr2[thisR2]) {//if an entry already exists...
-							var thisNew2;
+							var thisNew2; 
 							if (cCache2[thisR2]) {
 								thisNew2 = ""
 							} else {
@@ -849,6 +868,7 @@ function Map_Done() {
 			} 
 		} 
 			
+		
 		$.each(rArr2, function() {//loop through regions 
 		
 			var lArr2= [];
@@ -864,8 +884,9 @@ function Map_Done() {
 				regPercent2 = regPercent2* .01
 			} else {//otherwise just use the data
 				var regPercent2= parseFloat(rObj2.rPercent) / maxVal2 * .9
-			}
-			if (cCache2[rObj2.clean]) {
+			} 
+		
+			if (cCache2[rObj2.clean]) { 
 				
 				if ($.isArray(cCache2[rObj2.clean].geom)) {
 					$.each(cCache2[rObj2.clean].geom, function() {
@@ -876,12 +897,13 @@ function Map_Done() {
 							fillColor : rObj2.rColor,
 							strokeWidth : borderWidth,
 							strokeColor : rObj2.rColor,
-							fillOpacity : regPercent
+							fillOpacity : regPercent2
 						});
 						fArray2.push(feature_polygon2);
 						gCollection2.push(this)
+						
 					})
-				} else {
+				} else { 
 					var feature_polygon2 = new OpenLayers.Feature.Vector(//We'll make a polygon from a linear ring object, which consists of points
 					cCache2[rObj2.clean].geom, {
 						rName : rObj2.tName,
@@ -890,30 +912,31 @@ function Map_Done() {
 						fillColor : rObj2.rColor,
 						strokeWidth : borderWidth,
 						strokeColor : rObj2.rColor,
-						fillOpacity : regPercent
+						fillOpacity : regPercent2
 					});
 					fArray2.push(feature_polygon2);
 					gCollection2.push(cCache2[rObj2.clean].geom)
+					
 				}
-			} else {
+			} else { 
 				$.each(lArr2, function() {//loop through polygons associated with that region
 					var tempGeo2 = new OpenLayers.Geometry.Polygon(new OpenLayers.Geometry.LinearRing(this));
-					if (cCache2[rObj2.clean]) {
+					if (cCache2[rObj2.clean]) { 
 						var tempArr2 = [];
 						if (!$.isArray(cCache2[rObj2.clean].geom)) {
 							tempArr2.push(cCache2[rObj2.clean].geom);
 							tempArr2.push(tempGeo2);
 							cCache2[rObj2.clean].geom = tempArr2
-						} else {
+						} else { 
 							cCache2[rObj2.clean].geom.push(tempGeo2)
 						}
-					} else {
+					} else { 
 						cCache2[rObj2.clean] = {
 							rName : rObj2.tName,
 							rPop : rObj2.pop,
 							geom : tempGeo2
-						}
-					}
+						} 
+					} 
 					var feature_polygon2 = new OpenLayers.Feature.Vector(tempGeo2, {//We'll make a polygon from a linear ring object, which consists of points
 						rName : rObj2.tName,
 						rPop : rObj2.pop
@@ -921,15 +944,16 @@ function Map_Done() {
 						fillColor : rObj2.rColor,
 						strokeWidth : borderWidth,
 						strokeColor : rObj2.rColor,
-						fillOpacity : regPercent
+						fillOpacity : regPercent2
 					});
+					
 					fArray2.push(feature_polygon2);
 					gCollection2.push(tempGeo2)
 				})
 			}
+			
 		});
 		
-
 		
 		$.each(pArr2, function() {//loop through points
 
@@ -956,7 +980,7 @@ function Map_Done() {
 							strokeWidth : borderWidth,
 							strokeColor : rObj2.rColor,
 							fillOpacity : regOp2,
-							pointRadius : regPercent
+							pointRadius : regPercent2
 						});
 						fArray2.push(feature_point2);
 						gCollection2.push(this)
@@ -971,7 +995,7 @@ function Map_Done() {
 						strokeWidth : borderWidth,
 						strokeColor : rObj2.rColor,
 						fillOpacity : regOp2,
-						pointRadius : regPercent
+						pointRadius : regPercent2
 					});
 					fArray2.push(feature_point2);
 					gCollection2.push(cCache2[rObj2.clean].geom)
@@ -1008,7 +1032,7 @@ function Map_Done() {
 					fArray2.push(feature_point2);
 					gCollection2.push(this)
 						
-					//seems to be failing after this point for some reason?!
+					
 				}) 
 			} 
 			
@@ -1033,7 +1057,7 @@ function Map_Done() {
 							rName : rObj2.tName,
 							rPop : rObj2.pop
 						}, {
-							strokeWidth : regPercent,
+							strokeWidth : regPercent2,
 							strokeColor : rObj2.rColor,
 							strokeOpacity : lineO
 						});
@@ -1076,7 +1100,7 @@ function Map_Done() {
 						rName : rObj2.tName,
 						rPop : rObj2.pop
 					}, {
-						strokeWidth : regPercent,
+						strokeWidth : regPercent2,
 						strokeColor : rObj2.rColor,
 						strokeOpacity : lineO
 					});
@@ -1084,22 +1108,23 @@ function Map_Done() {
 					gCollection2.push(tempGeo2)
 				})
 			}
-		});
+		}); 
 
-	
+}
 /*******************************************************************************************************/		
 		
 		window[mapName].addLayer(layerOSM);
 		if (fArray.length > 0) {
 		
-			//add features to the layer
+		//add features to the layer
 			layerVector.addFeatures(fArray);
-			layerVector2.addFeatures(fArray2);
-			//add all of the features to the feature collection
+		if( loadLayerTwo == 1){	layerVector.addFeatures(fArray2);}
+		//add all of the features to the feature collection
 			fCollection.addComponents(gCollection);
-			fCollection2.addComponents(gCollection2);
+		
+			if( loadLayerTwo == 1){	window[mapName].addLayer(layerVector2);}
 			window[mapName].addLayer(layerVector);
-			window[mapName].addLayer(layerVector2);
+			
 			//find out the bounding box of the features	
 			var zoomTo = layerVector.getDataExtent();
 			//zoom map to those boundaries
@@ -1109,7 +1134,10 @@ function Map_Done() {
 				clickout : true,
 				box : true,
 				hover : true
-			});
+			}); 
+		//	layerVector.redraw({ force: true });
+		//	layerVector2.redraw({ force: true });
+			
 
 			//set up the modified box drawing
 			selectCtrl.handlers.box.keyMask = OpenLayers.Handler.MOD_SHIFT;
@@ -1119,33 +1147,31 @@ function Map_Done() {
 
 			//activate the control
 			selectCtrl.activate()
-
-				if (fArray2.length > 0) {
-				
-			//add features to the layer
-				layerVector2.addFeatures(fArray2);
-			//add all of the features to the feature collection
-				fCollection2.addComponents(gCollection2);
 			
-			window[mapName].addLayer(layerVector2);
-			//find out the bounding box of the features	
-			var zoomTo = layerVector.getDataExtent();
-			//zoom map to those boundaries
-			window[mapName].zoomToExtent(zoomTo);
-			//add control to handle selection of features
+			if( loadLayerTwo == 1){ 
 			var selectCtrl2 = new OpenLayers.Control.SelectFeature(layerVector2, {
 				clickout : true,
 				box : true,
 				hover : true
-			});
-			//set up the modified box drawing
-			selectCtrl.handlers.box.keyMask = OpenLayers.Handler.MOD_SHIFT;
-			selectCtrl.handlers.box.dragHandler.keyMask = OpenLayers.Handler.MOD_SHIFT;
+			}); 			
+			
+			selectCtrl2.handlers.box.keyMask = OpenLayers.Handler.MOD_SHIFT;
+			selectCtrl2.handlers.box.dragHandler.keyMask = OpenLayers.Handler.MOD_SHIFT;
 			//set up the modified box drawing
 			window[mapName].addControl(selectCtrl2);
+
 			//activate the control
 			selectCtrl2.activate()
-		}
+			
+			
+			
+			}
+			
+			
+			
+			
+
+
 		
 		}
 		
@@ -1202,6 +1228,12 @@ colorFormatter = function(c) {//function used to properly format the color that 
 		return cc;
 	}
 }
+
+
+
+
+
+
 var map, googProj, defaultProj;
 //to suppress a strange error that was being thrown for an unknown reason despite everything working properly
 //window.onerror = silentErrorHandler;
