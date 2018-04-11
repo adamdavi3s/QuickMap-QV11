@@ -8,6 +8,8 @@ This will run at the moment but you need to ensure that your data is very well c
 2018-04-11 Changes
 
 1- Outline of shapes now added (further work TBC)
+
 2- Ability to have different widths and opacity on layers 1 and 2
+
 3- General bug fixes
 
