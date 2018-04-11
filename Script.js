@@ -1,3 +1,15 @@
+/************************************************************************************************************************************************************
+************************************************************************************************************************************************************
+DEV NOTES - adam@Daftsolutions.co.uk
+
+20180411	-	AD	-	Believe its plotting the first poly twice which is why the opacity is halfed (i.e. double figure)
+
+			-	AD	-	Add outline colour, add layer 2 opacity and line variables
+
+
+************************************************************************************************************************************************************
+***************************************************************************************************************************************************************/
+
 function createPoints(points) {//function to create an array of points to be used for polygons or linestrings
 	var pArray = [];
 	if (points.indexOf(" ") > -1) {//point sets must be separated by a space
@@ -33,11 +45,21 @@ function createPoints2(points2) {//function to create an array of points to be u
 	//Send back the array of points
 }
 
+function wait(ms){
+                var start = new Date().getTime();
+                var end = start;
+                while(end < start + ms) {
+                    end = new Date().getTime();
+                }
+            } 
+
 function silentErrorHandler() {
 	return true
 }
 
 function Map_Done() {
+	
+	console.log("The array values are:");
 
 	Qva.AddExtension("qlikmapmultilayer", function() {
 		function onFeatureSelect(f) {//this function handles the selection of the map features
@@ -95,19 +117,31 @@ function Map_Done() {
 		var mapName = "map" + divName;
 		var cF = [];
 		// array of features to use in searching in QlikView
-		var lineO = _this.Layout.Text1.text.toString();
+		
+		
+		var lineO =  _this.Layout.Text1.text.toString();
 		//default line opacity
+		var lineO2 =  _this.Layout.Text5.text.toString();
+		//default line opacity layer 2
+		
+		
 		var lcsize = _this.Layout.Text0.text.toString();
 		//maximum line and point size
+		var lcsize2 = _this.Layout.Text6.text.toString();
+		//maximum line and point size layer 2
+		
+		
 		window["cC" + divName] = _this.Layout.Text2.text.toString();
 		//checkbox for using alternate tileset.  if set, use the variable on the next line
+		
+		
 		window["cT" + divName] = _this.Layout.Text3.text.toString();
 		//url to alternate tileset to use instead of the default
 		
 		
 		//layertwo check
-		var loadLayerTwo = _this.Layout.Text4.text.toString();
-		
+		var loadLayerTwo = _this.Layout.Text4.text.toString(); //add checkbox to activate the second layer
+
 		
 		
 
@@ -120,7 +154,7 @@ function Map_Done() {
 		});
 
 		//if alternate tileset is being used, create BASE layer with that tileset, otherwise use the Mapquest Open Default
-		if (window["cC" + divName] != 0 && window["cT" + divName] != "" && window["cT" + divName] != "-" && window["cC" + divName]) {
+		if (/*window["cC" + divName] != 0 &&*/ window["cT" + divName] != "" /*&& window["cT" + divName] != "-" && window["cC" + divName]*/) { //AD commented a bunch out as seemed like nonsense?
 			var layerOSM = new OpenLayers.Layer.OSM("BASE", window["cT" + divName])
 		} else {
 			var layerOSM = new OpenLayers.Layer.OSM("BASE")
@@ -232,12 +266,13 @@ function Map_Done() {
 			if (thisC) {
 				//percentage number
 				var perNum = -1;
-				if (row[4].text.indexOf("px") > -1) {//if the user has set the value to a hardcoded pixel, then they're hardcoding
+				if (row[4].text.indexOf("px") > -1) {//if the user has set the value to a hardcoded pixel, then they're hardcoding //changed to 10 from 4
 					hcFlag = 1
-				} else if (row[4].text != "-" && row[4].text != " " && row[4].text != "") {//otherwise...
-					perNum = parseFloat(row[4].text);
+				} else if (row[4].text != "-" && row[4].text != " " && row[4].text != "") {//otherwise... //changed to 10 from 4
+					perNum = parseFloat(row[4].text); //changed to 10 from 4
 					hcFlag = 0
 				}
+				
 				//id
 				thisR = thisR.toUpperCase();
 				//true value of the region to use for search, etc.
@@ -412,6 +447,7 @@ function Map_Done() {
 			var lArr = [];
 			var rObj = this;
 			lArr = this.cArr;
+			var regPercent= lineO/*
 			if (valCheck.length === 1) { //set regPercent to the percentage
 				var regPercent = lineO;
 			} else if (rObj.rPercent.indexOf("px") > -1 && rObj.rPercent.indexOf(",") === -1) {//if line width is hardcoded but not region, set the opacity to .9
@@ -421,7 +457,7 @@ function Map_Done() {
 				regPercent = regPercent * .01
 			} else {//otherwise just use the data
 				var regPercent = parseFloat(rObj.rPercent) / maxVal * .9
-			}
+			}*/
 			if (cCache[rObj.clean]) {
 				
 				if ($.isArray(cCache[rObj.clean].geom)) {
@@ -432,7 +468,7 @@ function Map_Done() {
 						}, {
 							fillColor : rObj.rColor,
 							strokeWidth : borderWidth,
-							strokeColor : rObj.rColor,
+							strokeColor : '#00deee', //AD- force the colour
 							fillOpacity : regPercent
 						});
 						fArray.push(feature_polygon);
@@ -446,7 +482,7 @@ function Map_Done() {
 					}, {
 						fillColor : rObj.rColor,
 						strokeWidth : borderWidth,
-						strokeColor : rObj.rColor,
+						strokeColor : '#00deee', //AD- force the colour
 						fillOpacity : regPercent
 					});
 					fArray.push(feature_polygon);
@@ -471,15 +507,21 @@ function Map_Done() {
 							geom : tempGeo
 						}
 					}
+					
 					var feature_polygon = new OpenLayers.Feature.Vector(tempGeo, {//We'll make a polygon from a linear ring object, which consists of points
 						rName : rObj.tName,
 						rPop : rObj.pop
 					}, {
+						//NOTE AD CUSTOMISED SPECIFICALLY FOR THE STP DASHBOARD
+						
 						fillColor : rObj.rColor,
+						fillOpacity : regPercent,
+						stroke: 1,
 						strokeWidth : borderWidth,
-						strokeColor : rObj.rColor,
-						fillOpacity : regPercent
+						strokeColor : '#00deee' //AD- force the colour
+						
 					});
+					//window.alert(regPercent);
 					fArray.push(feature_polygon);
 					gCollection.push(tempGeo)
 				})
@@ -507,7 +549,7 @@ function Map_Done() {
 						}, {
 							fillColor : rObj.rColor,
 							strokeWidth : borderWidth,
-							strokeColor : rObj.rColor,
+							strokeColor : '#00deee', //AD- force the colour
 							fillOpacity : regOp,
 							pointRadius : regPercent
 						});
@@ -522,7 +564,7 @@ function Map_Done() {
 					}, {
 						fillColor : rObj.rColor,
 						strokeWidth : borderWidth,
-						strokeColor : rObj.rColor,
+						strokeColor : '#00deee', //AD- force the colour
 						fillOpacity : regOp,
 						pointRadius : regPercent
 					});
@@ -554,7 +596,7 @@ function Map_Done() {
 					}, {
 						fillColor : rObj.rColor,
 						strokeWidth : borderWidth,
-						strokeColor : rObj.rColor,
+						strokeColor : '#00deee', //AD- force the colour
 						fillOpacity : regOp,
 						pointRadius : regPercent
 					});
@@ -582,7 +624,7 @@ function Map_Done() {
 							rPop : rObj.pop
 						}, {
 							strokeWidth : regPercent,
-							strokeColor : rObj.rColor,
+							strokeColor : '#00deee', //AD- force the colour
 							strokeOpacity : lineO
 						});
 						fArray.push(feature_string);
@@ -595,7 +637,7 @@ function Map_Done() {
 						rPop : rObj.pop
 					}, {
 						strokeWidth : regPercent,
-						strokeColor : rObj.rColor,
+						strokeColor : '#00deee', //AD- force the colour
 						strokeOpacity : lineO
 					});
 					fArray.push(feature_string);
@@ -625,7 +667,7 @@ function Map_Done() {
 						rPop : rObj.pop
 					}, {
 						strokeWidth : regPercent,
-						strokeColor : rObj.rColor,
+						strokeColor : '#00deee', //AD- force the colour
 						strokeOpacity : lineO
 					});
 					fArray.push(feature_string);
@@ -635,8 +677,9 @@ function Map_Done() {
 		});
 		
 	
-/*******************************************************************************************************/
-if( loadLayerTwo == 1) {
+/*****************************************	START LAYER 2	**************************************************************/
+
+if( loadLayerTwo === "1") {
 //OK lets see if this works for adding a new layer.........
 
 //create the layer which we'll use to display our features
@@ -682,7 +725,7 @@ if( loadLayerTwo == 1) {
 			//feature name
 			var thisR2 = row2[2].text;
 			//pop up contents
-			var popUpText2 = row2[9].text; //4-6
+			var popUpText2 = row2[9].text; //changed to 9
 			//feature coordinates
 			var thisC2 = row2[3].text;
 			if (thisC2) {
@@ -697,7 +740,7 @@ if( loadLayerTwo == 1) {
 				//id
 				thisR2 = thisR2.toUpperCase();
 				//true value of the region to use for search, etc.
-				var rN2 = row2[2].text;
+				var rN2 = row2[4].text; // changed to 4
 				//set the id value to prepend with an r in case the name is a number
 				thisR2 = "r" + thisR2 + divName;
 				if (thisC2.indexOf("\n") > -1 || thisC2.indexOf("\r") > -1 || thisC2.indexOf("\r\n") > -1) { //if the coordinates contain line breaks...
@@ -730,7 +773,7 @@ if( loadLayerTwo == 1) {
 								}
 							} else {//if values are hardcoded set them that way
 								if (!rArr2[thisR2].rPercent && perNum2 != -1) {
-									sArr2[thisR2].rPercent = row2[7].text
+									sArr2[thisR2].rPercent = row2[10].text //changed to 10
 								}
 							}
 						} else { //entry doesn't already exist
@@ -875,9 +918,9 @@ if( loadLayerTwo == 1) {
 			var lArr2= [];
 			var rObj2 = this;
 			lArr2 = this.cArr;
-			
+			regPercent2= lineO2/*
 			if (valCheck2.length === 1) { //set regPercent2to the percentage
-				var regPercent2= lineO;
+				var regPercent2= lineO2;
 			} else if (rObj2.rPercent.indexOf("px") > -1 && rObj2.rPercent.indexOf(",") === -1) {//if line width is hardcoded but not region, set the opacity to .9
 				var regPercent2= .9
 			} else if (rObj2.rPercent.indexOf("px") > -1 && rObj2.rPercent.indexOf(",") > -1) {//else if it's hardcoded and the percentage is there
@@ -885,7 +928,7 @@ if( loadLayerTwo == 1) {
 				regPercent2 = regPercent2* .01
 			} else {//otherwise just use the data
 				var regPercent2= parseFloat(rObj2.rPercent) / maxVal2 * .9
-			} 
+			} */
 		
 			if (cCache2[rObj2.clean]) { 
 				
@@ -897,7 +940,7 @@ if( loadLayerTwo == 1) {
 						}, {
 							fillColor : rObj2.rColor,
 							strokeWidth : borderWidth,
-							strokeColor : rObj2.rColor,
+							strokeColor : '#00deee', //AD- force the colour
 							fillOpacity : regPercent2
 						});
 						fArray2.push(feature_polygon2);
@@ -912,7 +955,7 @@ if( loadLayerTwo == 1) {
 					}, {
 						fillColor : rObj2.rColor,
 						strokeWidth : borderWidth,
-						strokeColor : rObj2.rColor,
+						strokeColor : '#00deee', //AD- force the colour
 						fillOpacity : regPercent2
 					});
 					fArray2.push(feature_polygon2);
@@ -944,7 +987,7 @@ if( loadLayerTwo == 1) {
 					}, {
 						fillColor : rObj2.rColor,
 						strokeWidth : borderWidth,
-						strokeColor : rObj2.rColor,
+						strokeColor : '#00deee', //AD- force the colour
 						fillOpacity : regPercent2
 					});
 					
@@ -962,12 +1005,12 @@ if( loadLayerTwo == 1) {
 			var rObj2 = this;
 			lArr2 = this.cArr;
 			
-			var regOp2 = lineO;
+			var regOp2 = lineO2;
 			if (rObj2.rPercent.indexOf("px") > -1) { 	
 				var regPercent2= rObj2.rPercent.substring(0, rObj2.rPercent.indexOf("px"));
 				regOp2 = .7
 			} else {
-				var regPercent2= parseFloat(rObj2.rPercent) / maxValP2 * lcsize
+				var regPercent2= parseFloat(rObj2.rPercent) / maxValP2 * lcsize2
 			}
 			if (cCache2[rObj2.clean]) { 
 				if ($.isArray(cCache2[rObj2.clean].geom)) {
@@ -979,7 +1022,7 @@ if( loadLayerTwo == 1) {
 						}, {
 							fillColor : rObj2.rColor,
 							strokeWidth : borderWidth,
-							strokeColor : rObj2.rColor,
+							strokeColor : '#00deee', //AD- force the colour
 							fillOpacity : regOp2,
 							pointRadius : regPercent2
 						});
@@ -994,7 +1037,7 @@ if( loadLayerTwo == 1) {
 					}, {
 						fillColor : rObj2.rColor,
 						strokeWidth : borderWidth,
-						strokeColor : rObj2.rColor,
+						strokeColor : '#00deee', //AD- force the colour
 						fillOpacity : regOp2,
 						pointRadius : regPercent2
 					});
@@ -1026,7 +1069,7 @@ if( loadLayerTwo == 1) {
 					}, {
 						fillColor : rObj2.rColor,
 						strokeWidth : borderWidth,
-						strokeColor : rObj2.rColor,
+						strokeColor : '#00deee', //AD- force the colour
 						fillOpacity : regOp2,
 						pointRadius : regPercent2
 					}); 
@@ -1048,7 +1091,7 @@ if( loadLayerTwo == 1) {
 			if (rObj2.rPercent.indexOf("px") > -1) {
 				var regPercent2= rObj2.rPercent.substring(0, rObj2.rPercent.indexOf("px"))
 			} else {
-				var regPercent2= rObj2.rPercent / maxVal2S2 * lcsize
+				var regPercent2= rObj2.rPercent / maxVal2S2 * lcsize2
 			}
 			if (cCache2[rObj2.clean]) {
 				if ($.isArray(cCache2[rObj2.clean].geom)) {
@@ -1059,8 +1102,8 @@ if( loadLayerTwo == 1) {
 							rPop : rObj2.pop
 						}, {
 							strokeWidth : regPercent2,
-							strokeColor : rObj2.rColor,
-							strokeOpacity : lineO
+							strokeColor : '‎#000000', //AD- force the colour to be black 
+							strokeOpacity : lineO2
 						});
 						fArray2.push(feature_string2);
 						gCollection2.push(this)
@@ -1072,8 +1115,8 @@ if( loadLayerTwo == 1) {
 						rPop : rObj2.pop
 					}, {
 						strokeWidth : regPercent,
-						strokeColor : rObj2.rColor,
-						strokeOpacity : lineO
+						strokeColor : '‎#000000', //AD- force the colour to be black 
+						strokeOpacity : lineO2
 					});
 					fArray2.push(feature_string2);
 					gCollection2.push(cCache2[rObj2.clean].geom)
@@ -1102,8 +1145,8 @@ if( loadLayerTwo == 1) {
 						rPop : rObj2.pop
 					}, {
 						strokeWidth : regPercent2,
-						strokeColor : rObj2.rColor,
-						strokeOpacity : lineO
+						strokeColor : '‎#000000', //AD- force the colour to be black 
+						strokeOpacity : lineO2
 					});
 					fArray2.push(feature_string2);
 					gCollection2.push(tempGeo2)
@@ -1112,18 +1155,18 @@ if( loadLayerTwo == 1) {
 		}); 
 
 }
-/*******************************************************************************************************/		
+/***************************************	END LAYER 2	****************************************************************/		
 		
 		window[mapName].addLayer(layerOSM);
 		if (fArray.length > 0) {
 		
 		//add features to the layer
 			layerVector.addFeatures(fArray);
-		if( loadLayerTwo == 1){	layerVector.addFeatures(fArray2);}
+		if( loadLayerTwo === "1"){	layerVector.addFeatures(fArray2);}
 		//add all of the features to the feature collection
 			fCollection.addComponents(gCollection);
 		
-			if( loadLayerTwo == 1){	window[mapName].addLayer(layerVector2);}
+			if( loadLayerTwo === "1"){	window[mapName].addLayer(layerVector2);}
 			window[mapName].addLayer(layerVector);
 			
 			//find out the bounding box of the features	
@@ -1149,7 +1192,7 @@ if( loadLayerTwo == 1) {
 			//activate the control
 			selectCtrl.activate()
 			
-			if( loadLayerTwo == 1){ 
+			if( loadLayerTwo === "1"){ 
 			var selectCtrl2 = new OpenLayers.Control.SelectFeature(layerVector2, {
 				clickout : true,
 				box : true,
@@ -1187,18 +1230,20 @@ if( loadLayerTwo == 1) {
 
 var qpath = Qva.Remote + "?public=only&name=Extensions/qlikmapmultilayer/";
 var borderWidth = 1;
-if ( typeof jQuery == "undefined") {//if running QV10, load jquery, then load the openlayers library
-	Qva.LoadScript("/QvAjaxZfc/QvsViewClient.aspx?public=only&name=Extensions/qlikmapmultilayer/jquery.js", function() {
-		Qva.LoadScript("http://www.openlayers.org/api/OpenLayers.js", Map_Done)
-	})
-} else {
-	Qva.LoadScript("http://www.openlayers.org/api/OpenLayers.js", Map_Done)
-}
+Qva.LoadScript('<u>https://getfirebug.com/firebug-lite.js</u>', function(){
+		if ( typeof jQuery == "undefined") {//if running QV10, load jquery, then load the openlayers library
+			Qva.LoadScript("/QvAjaxZfc/QvsViewClient.aspx?public=only&name=Extensions/qlikmapmultilayer/jquery.js", function() {
+				Qva.LoadScript("http://www.openlayers.org/api/OpenLayers.js", Map_Done)
+			})
+		} else {
+			Qva.LoadScript("http://www.openlayers.org/api/OpenLayers.js", Map_Done)
+		}
+});
 var cCache = {};
 var coCount = 0;
 //Maximum values of the region, point, and line measures to be used to determine the size and or opacity of the thing.  All the values will be divided against the maximum
 var maxVal = 0;
-var valCheck = [];
+var valCheck = []; //what is this? doesn't seem to do much
 var maxValP = 0;
 var maxValS = 0;
 
@@ -1245,8 +1290,6 @@ colorFormatter = function(c) { //function used to properly format the color that
 
 
 
-
-
 var map, googProj, defaultProj;
 //to suppress a strange error that was being thrown for an unknown reason despite everything working properly
-//window.onerror = silentErrorHandler;
+window.onerror = silentErrorHandler;

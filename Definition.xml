@@ -4,24 +4,28 @@
   <Dimension Label="Coordinates" Initial="" DropTarget="coordinates"/>
   <Dimension Label="Region Dimension2" Initial=""/>
   <Dimension Label="Coordinates2" Initial="" DropTarget="coordinates"/>
-  <Measurement Label="Measurement" Initial="" />
-  <Measurement Label="ColorExpression" Initial="" />
+  <Measurement Label="Measurement" Initial="=1" />
+  <Measurement Label="ColorExpression" Initial="=1" />
   <Measurement Label="Popup Contents" Initial="" />  
-       <Measurement Label="Measurement2" Initial="" />
+   <Measurement Label="Measurement2" Initial="" />
   <Measurement Label="ColorExpression2" Initial="" />
   <Measurement Label="Popup Contents2" Initial="" />
    <Text Label="Max Line Width and Point Size" Type="text" Expression="20"/>
-  <Text Label="Default Opacity (decimal)" Type="text" Expression=".7"/>
+  <Text Label="Default Opacity (decimal)" Type="text" Expression=".2"/>
   <Text Label="Use Other Tile Set" Type="checkbox"/>
   <Text Label="Tileset URL" Type="text" Expression=""/>
   <Text Label="Activate Layer Two" Type="checkbox"/>
+   <Text Label="Default Opacity Layer 2" Type="text" Expression=".9"/>
+   <Text Label="Max Width / Size Layer2" Type="text" Expression="20"/>
   <Initiate Name="Chart.Title" value="Qlik Map Multi Layer" />
   <Initiate Name="Caption.Text" Value="Qlik Map Multi Layer" />
   <Initiate Name="Chart.BgColor.ColorHex" value="#FFF" />
-  <Initiate Name="Chart.Dimension.0.Field" Value="rgn15cd" />
-  <Initiate Name="Chart.Dimension.1.Field" Value="RGCoordinates" />
-  <Initiate Name="Chart.Dimension.2.Field" Value="=1" />
-  <Initiate Name="Chart.Dimension.3.Field" Value="=1" />
+  <Initiate Name="Chart.Dimension.0.Field" Value="=$(v_dimension_1_actual)" />
+  <Initiate Name="Chart.Dimension.1.Field" Value="=$(v_dimension_1_geography)" />
+  <Initiate Name="Chart.Dimension.2.Field" Value="=$(v_dimension_2_actual)" />
+  <Initiate Name="Chart.Dimension.3.Field" Value="=$(v_dimension_2_geography)" />
+  <Initiate Name="Chart.Measurement.4.Field" Value="=$(v_measure_1)" />
+  <Initiate Name="Chart.Measurement.5.Field" Value="=rgb(235,233,233)" />
   </ExtensionObject>
 
 
